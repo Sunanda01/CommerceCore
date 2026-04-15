@@ -3,10 +3,14 @@ package com.CommerceCore.service;
 import com.CommerceCore.dto.CartItemDto;
 import com.CommerceCore.dto.OrderDto;
 import com.CommerceCore.entity.*;
+import com.CommerceCore.repository.CartItemRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CartItemService {
+    private final CartItemRepo cartItemRepo;
     public CartItemDto mapToDto(CartItem cartItem){
         // Entity => DTO
         return CartItemDto.builder()

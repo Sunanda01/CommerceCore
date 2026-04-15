@@ -3,10 +3,14 @@ package com.CommerceCore.service;
 import com.CommerceCore.dto.OrderDto;
 import com.CommerceCore.dto.ProductDto;
 import com.CommerceCore.entity.*;
+import com.CommerceCore.repository.OrderRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
+    private final OrderRepo orderRepo;
     public OrderDto mapToDto(Order order){
         // Entity => DTO
         return OrderDto.builder()

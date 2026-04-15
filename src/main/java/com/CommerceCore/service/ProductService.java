@@ -3,10 +3,14 @@ package com.CommerceCore.service;
 import com.CommerceCore.dto.ProductDto;
 import com.CommerceCore.entity.Category;
 import com.CommerceCore.entity.Product;
+import com.CommerceCore.repository.ProductRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
+    private final ProductRepo productRepo;
     public ProductDto mapToDto(Product product){
         // Entity => DTO
         return ProductDto.builder()
