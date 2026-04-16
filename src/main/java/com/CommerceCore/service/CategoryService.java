@@ -10,12 +10,28 @@ import com.CommerceCore.repository.CategoryRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepo categoryRepo;
+    // Create Category
+    public CategoryDto createCategory(CategoryDto categoryDto){
+        Category category=mapToEntity(categoryDto);
+        return mapToDto(categoryRepo.save(category));
+    }
+
+    // Get All Category
+    public List<CategoryDto> getAllCategory(){
+        return categoryRepo.findAll()
+                .stream()
+                .map(this::mapToDto)
+                .toList();
+    }
+
+    // Entity => DTO
     public CategoryDto mapToDto(Category category){
-        // Entity => DTO
         return CategoryDto.builder()
                 .id(category.getId())
                 .name(category.getName())
