@@ -11,6 +11,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepo userRepo;
+
+    // Create User
+    public UserDto createUser(UserDto dto){
+        User user=mapToEntity(dto);
+        return mapToDto(userRepo.save(user));
+    }
+
+    //Get User By id
+    public UserDto getUserById(Long userId){
+        User user=userRepo.findById(userId).orElseThrow(()->new RuntimeException("User Not Found"));
+        return mapToDto(user);
+    }
+
     // Entity => DTO
     public UserDto mapToDto(User user){
         return UserDto.builder()

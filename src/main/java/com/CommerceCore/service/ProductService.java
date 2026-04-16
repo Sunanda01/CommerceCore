@@ -24,7 +24,6 @@ public class ProductService {
         return mapToDto(saved);
     }
 
-
     // Get All Product
     public List<ProductDto> getAllProduct(){
         return productRepo.findAll()

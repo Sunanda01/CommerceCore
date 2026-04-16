@@ -1,8 +1,8 @@
 package com.CommerceCore.service;
 
-import com.CommerceCore.dto.CartItemDto;
 import com.CommerceCore.dto.OrderDto;
-import com.CommerceCore.dto.ProductDto;
+
+import com.CommerceCore.dto.OrderItemDto;
 import com.CommerceCore.entity.*;
 import com.CommerceCore.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ public class OrderService {
     private final UserRepo userRepo;
     private final CartItemRepo cartItemRepo;
     private final OrderItemRepo orderItemRepo;
+    private final OrderItemService itemService;
 
     // Place order
     @Transactional
@@ -68,11 +69,17 @@ public class OrderService {
 
     // Entity => DTO
     public OrderDto mapToDto(Order order){
+        List<OrderItemDto> items=orderItemRepo.findByOrderId(order.getId())
+                .stream()
+                .map(itemService::mapToDto)
+                .toList();
+
         return OrderDto.builder()
                 .id(order.getId())
                 .totalAmount(order.getTotalAmount())
                 .createdAt(order.getCreatedAt())
                 .status(order.getStatus().name())  // enum => string
+                .items(items)
                 .build();
     }
 
