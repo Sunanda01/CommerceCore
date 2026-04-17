@@ -1,44 +1,49 @@
 package com.CommerceCore.service;
 
 import com.CommerceCore.dto.UserDto;
+import com.CommerceCore.dto.UserRequestDto;
+import com.CommerceCore.dto.UserResponseDto;
 import com.CommerceCore.entity.Role;
 import com.CommerceCore.entity.User;
 import com.CommerceCore.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
     // Create User
-    public UserDto createUser(UserDto dto){
+    public UserResponseDto createUser(UserRequestDto dto){
         User user=mapToEntity(dto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return mapToDto(userRepo.save(user));
     }
 
     //Get User By id
-    public UserDto getUserById(Long userId){
+    public UserResponseDto getUserById(Long userId){
         User user=userRepo.findById(userId).orElseThrow(()->new RuntimeException("User Not Found"));
         return mapToDto(user);
     }
 
     // Entity => DTO
-    public UserDto mapToDto(User user){
-        return UserDto.builder()
-                .id(user.getId())
+    public UserResponseDto mapToDto(User user){
+        return UserResponseDto.builder()
                 .name(user.getName())
                 .email(user.getEmail())
                 .build();
     }
 
     // DTO => Entity
-    public User mapToEntity(UserDto dto){
+    public User mapToEntity(UserRequestDto dto){
         return User.builder()
                 .id(dto.getId())
                 .name(dto.getName())
                 .email(dto.getEmail())
+                .password(dto.getPassword())
                 .role(Role.USER)        // default role
                 .build();
     }
