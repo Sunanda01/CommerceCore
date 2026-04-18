@@ -12,34 +12,51 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // 🔹 Custom Exception
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ErrorResponse> handleApiException(ApiException ex){
-        ErrorResponse error=new ErrorResponse(
-                ex.getMessage(),
-                ex.getStatus(),
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(error, ex.getStatus());
+    public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
+
+        ErrorResponse response = ErrorResponse.builder()
+                .message(ex.getMessage())
+                .status(ex.getStatus())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(response, ex.getStatus());
     }
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex){
-        ErrorResponse error=new ErrorResponse(
-                "Something Went Wrong",
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+
+    // 🔹 Validation Exception
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidation(
+    public ResponseEntity<ErrorResponse> handleValidation(
             MethodArgumentNotValidException ex) {
 
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), error.getDefaultMessage());
-        });
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage())
+        );
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        ErrorResponse response = ErrorResponse.builder()
+                .message("Validation Failed")
+                .status(HttpStatus.BAD_REQUEST)
+                .timeStamp(LocalDateTime.now())
+                .errors(errors)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    // 🔹 Generic Exception (Fallback)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+
+        ErrorResponse response = ErrorResponse.builder()
+                .message("Something Went Wrong")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

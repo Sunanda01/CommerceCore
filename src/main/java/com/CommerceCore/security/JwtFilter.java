@@ -76,11 +76,11 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
 
-            ErrorResponse error = new ErrorResponse(
-                    "Invalid or expired token",
-                    HttpStatus.UNAUTHORIZED,
-                    LocalDateTime.now()
-            );
+            ErrorResponse error = ErrorResponse.builder()
+                    .message("Invalid or expired token")
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .timeStamp(LocalDateTime.now())
+                    .build();
 
             mapper.writeValue(response.getWriter(), error);
         }
