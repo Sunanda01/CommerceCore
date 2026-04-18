@@ -18,6 +18,9 @@ public class UserService {
 
     // Create User
     public UserResponseDto createUser(UserRequestDto dto){
+        if(userRepo.findByEmail(dto.getEmail()).isPresent()){
+            throw new RuntimeException("User Already exists");
+        }
         User user=mapToEntity(dto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return mapToDto(userRepo.save(user));
@@ -32,6 +35,7 @@ public class UserService {
     // Entity => DTO
     public UserResponseDto mapToDto(User user){
         return UserResponseDto.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .build();
