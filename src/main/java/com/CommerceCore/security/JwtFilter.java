@@ -1,5 +1,6 @@
 package com.CommerceCore.security;
 
+import com.CommerceCore.entity.CustomUserPrincipal;
 import com.CommerceCore.entity.User;
 import com.CommerceCore.repository.UserRepo;
 
@@ -30,22 +31,32 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader= request.getHeader("Authorization");
         String jwt=null;
-        String email=null;
+        Long userId=null;
+        String role=null;
 
         // Extract Token
         if(authHeader!=null && authHeader.startsWith("Bearer ")){
             jwt=authHeader.substring(7);
-            email=jwtUtil.extractEmail(jwt);
+            userId=jwtUtil.extractUserId(jwt);
+            role=jwtUtil.extractRole(jwt);
         }
 
         // validate & Set Authentication
-        if(email!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-            User user=repo.findByEmail(email).orElseThrow(()->new RuntimeException("User Not Found"));
-            if(jwtUtil.isTokenValid(jwt, user.getEmail())){
+        if(userId!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+            User user=repo.findById(userId).orElseThrow(()->new RuntimeException("User Not Found"));
+            List<SimpleGrantedAuthority> authorities = List.of(
+                    new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+            );
+            CustomUserPrincipal principal = new CustomUserPrincipal(
+                    user.getId(),
+                    user.getEmail(),
+                    authorities
+            );
+            if(jwtUtil.isTokenValid(jwt, user.getId())){
                 UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(
-                        user,
+                        principal,
                         null,
-                        List.of(new SimpleGrantedAuthority("ROLE_"+user.getRole().name()))
+                        principal.getAuthorities()
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);

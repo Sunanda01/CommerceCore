@@ -20,6 +20,6 @@ public class AuthService {
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new RuntimeException("Invalid Credentials");
         }
-        return jwtUtil.generateToken(user.getEmail());
+        return jwtUtil.generateToken(user.getId(),user.getRole().name());
     }
 }

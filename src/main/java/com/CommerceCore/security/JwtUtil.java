@@ -21,18 +21,23 @@ public class JwtUtil {
     }
 
     // Generate Token
-    public String generateToken(String email) {
+    public String generateToken(Long userId,String role) {
         return Jwts.builder()
-                .setSubject(email)
+                .claim("userId",userId)
+                .claim("role",role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Extract Username (email)
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
+    // Extract userId and role
+    public Long extractUserId(String token){
+        return extractAllClaims(token).get("userId", Long.class);
+    }
+
+    public String extractRole(String token){
+        return extractAllClaims(token).get("role", String.class);
     }
 
     // Extract Expiration
@@ -61,9 +66,9 @@ public class JwtUtil {
     }
 
     // Validate Token
-    public boolean isTokenValid(String token, String email) {
-        final String extractEmail = extractEmail(token);
-        return (extractEmail.equals(email) && !isTokenExpired(token));
+    public boolean isTokenValid(String token, Long userId) {
+        final Long existUserId = extractUserId(token);
+        return (existUserId.equals(userId) && !isTokenExpired(token));
     }
 }
 
