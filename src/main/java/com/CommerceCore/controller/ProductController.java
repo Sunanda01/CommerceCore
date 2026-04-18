@@ -2,6 +2,7 @@ package com.CommerceCore.controller;
 
 import com.CommerceCore.dto.ProductDto;
 import com.CommerceCore.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -18,7 +19,7 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto dto){
+    public ProductDto createProduct(@Valid @RequestBody ProductDto dto){
         return productService.createProduct(dto);
     }
 

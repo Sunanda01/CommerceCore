@@ -5,6 +5,7 @@ import com.CommerceCore.dto.UserRequestDto;
 import com.CommerceCore.dto.UserResponseDto;
 import com.CommerceCore.service.AuthService;
 import com.CommerceCore.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,12 +20,12 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public UserResponseDto createUser(@RequestBody UserRequestDto dto){
+    public UserResponseDto createUser(@Valid @RequestBody UserRequestDto dto){
         return userService.createUser(dto);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDto dto){
+    public String login(@Valid @RequestBody LoginRequestDto dto){
         return service.login(dto.getEmail(), dto.getPassword());
     }
 }

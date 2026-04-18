@@ -2,6 +2,7 @@ package com.CommerceCore.controller;
 
 import com.CommerceCore.dto.CategoryDto;
 import com.CommerceCore.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -18,7 +19,7 @@ public class CategoryController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public CategoryDto createCategory(@RequestBody CategoryDto dto){
+    public CategoryDto createCategory(@Valid @RequestBody CategoryDto dto){
         return categoryService.createCategory(dto);
     }
 
