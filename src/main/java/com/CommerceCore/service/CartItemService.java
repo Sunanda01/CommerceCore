@@ -3,10 +3,12 @@ package com.CommerceCore.service;
 import com.CommerceCore.dto.CartItemDto;
 import com.CommerceCore.dto.OrderDto;
 import com.CommerceCore.entity.*;
+import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.CartItemRepo;
 import com.CommerceCore.repository.ProductRepo;
 import com.CommerceCore.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +21,8 @@ public class CartItemService {
     private final ProductRepo productRepo;
     // Add To Cart
     public CartItemDto addToCart(Long userId, Long productId, int quantity){
-        User user=userRepo.findById(userId).orElseThrow(()->new RuntimeException("User Not Found"));
-        Product product=productRepo.findById(productId).orElseThrow(()->new RuntimeException("Product Not Found"));
+        User user=userRepo.findById(userId).orElseThrow(()->new ApiException("User Not Found", HttpStatus.NOT_FOUND));
+        Product product=productRepo.findById(productId).orElseThrow(()->new ApiException("Product Not Found",HttpStatus.NOT_FOUND));
         CartItem cartItem=CartItem.builder()
                 .user(user)
                 .product(product)

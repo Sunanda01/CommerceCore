@@ -4,12 +4,15 @@ import com.CommerceCore.dto.OrderDto;
 
 import com.CommerceCore.dto.OrderItemDto;
 import com.CommerceCore.entity.*;
+import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,11 +27,11 @@ public class OrderService {
     // Place order
     @Transactional
     public OrderDto placeOrder(long userId){
-        User user=userRepo.findById(userId).orElseThrow(()->new RuntimeException("User Not Found"));
+        User user=userRepo.findById(userId).orElseThrow(()->new ApiException("User Not Found", HttpStatus.NOT_FOUND));
         // 1. Get Cart Items of User
         List<CartItem> cartItems=cartItemRepo.findByUserId(userId);
         if(cartItems.isEmpty()){
-            throw new RuntimeException("cart is Empty");
+            throw new ApiException("Cart is Empty",HttpStatus.BAD_REQUEST);
         }
 
         // 2. Create order without total amount
@@ -40,6 +43,7 @@ public class OrderService {
         Order savedOrder=orderRepo.save(order);
 
         double totAmount=0;
+        List<OrderItem> orderItems = new ArrayList<>();
         // 3. Convert Cart → OrderItems
         for (CartItem cartItem:cartItems){
             double price=cartItem.getProduct().getPrice();
@@ -51,8 +55,9 @@ public class OrderService {
                     .price(price)
                     .build();
             totAmount+=price*quantity;
-            orderItemRepo.save(orderItem);  // Each item stored separately
+            orderItems.add(orderItem);  // Each item stored separately
         }
+        orderItemRepo.saveAll(orderItems);
         savedOrder.setTotalAmount(totAmount);
         orderRepo.save(savedOrder);         // Update Total in Order
         cartItemRepo.deleteAll(cartItems);  // After order cart gets empty

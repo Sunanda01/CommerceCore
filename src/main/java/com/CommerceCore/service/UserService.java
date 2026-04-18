@@ -5,8 +5,10 @@ import com.CommerceCore.dto.UserRequestDto;
 import com.CommerceCore.dto.UserResponseDto;
 import com.CommerceCore.entity.Role;
 import com.CommerceCore.entity.User;
+import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +23,7 @@ public class UserService {
     // Create User
     public UserResponseDto createUser(UserRequestDto dto){
         if(userRepo.findByEmail(dto.getEmail()).isPresent()){
-            throw new RuntimeException("User Already exists");
+            throw new ApiException("User Already exists", HttpStatus.CONFLICT);
         }
         User user=mapToEntity(dto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -37,7 +39,7 @@ public class UserService {
 
     //Get User By id
     public UserResponseDto getUserById(Long userId){
-        User user=userRepo.findById(userId).orElseThrow(()->new RuntimeException("User Not Found"));
+        User user=userRepo.findById(userId).orElseThrow(()->new ApiException("User Not Found",HttpStatus.NOT_FOUND));
         return mapToDto(user);
     }
 

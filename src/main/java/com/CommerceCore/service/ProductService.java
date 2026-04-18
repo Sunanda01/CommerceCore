@@ -3,9 +3,11 @@ package com.CommerceCore.service;
 import com.CommerceCore.dto.ProductDto;
 import com.CommerceCore.entity.Category;
 import com.CommerceCore.entity.Product;
+import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.CategoryRepo;
 import com.CommerceCore.repository.ProductRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public class ProductService {
 
     // Create Product
     public ProductDto createProduct(ProductDto dto){
-        Category category=categoryRepo.findById(dto.getCategoryId()).orElseThrow(()->new RuntimeException("Category Not Found"));
+        Category category=categoryRepo.findById(dto.getCategoryId()).orElseThrow(()->new ApiException("Category Not Found", HttpStatus.NOT_FOUND));
         Product product=mapToEntity(dto,category);
         Product saved=productRepo.save(product);
         return mapToDto(saved);
@@ -35,7 +37,7 @@ public class ProductService {
     // Get Product By ID
     public ProductDto getProductById(Long productId){
         Product product=productRepo.findById(productId)
-                .orElseThrow(()->new RuntimeException("Product Not Found"));
+                .orElseThrow(()->new ApiException("Product Not Found",HttpStatus.NOT_FOUND));
         return mapToDto(product);
     }
 
