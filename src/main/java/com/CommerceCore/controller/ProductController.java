@@ -1,9 +1,12 @@
 package com.CommerceCore.controller;
 
 import com.CommerceCore.dto.ProductDto;
+import com.CommerceCore.entity.PageResponse;
 import com.CommerceCore.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +28,13 @@ public class ProductController {
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping
-    public List<ProductDto> getAllProduct(){
-        return productService.getAllProduct();
+    public PageResponse<ProductDto> getAllProduct(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ){
+        return productService.getAllProduct(page, size, sortBy, direction);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")

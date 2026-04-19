@@ -2,15 +2,20 @@ package com.CommerceCore.service;
 
 import com.CommerceCore.dto.ProductDto;
 import com.CommerceCore.entity.Category;
+import com.CommerceCore.entity.PageResponse;
 import com.CommerceCore.entity.Product;
 import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.CategoryRepo;
 import com.CommerceCore.repository.ProductRepo;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +32,18 @@ public class ProductService {
     }
 
     // Get All Product
-    public List<ProductDto> getAllProduct(){
-        return productRepo.findAll()
-                .stream()
-                .map(this::mapToDto)
-                .toList();
+    public PageResponse<ProductDto> getAllProduct(int page, int size, String sortBy, String direction){
+        Sort sort=direction.equalsIgnoreCase("asc")?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+        Pageable pageable= PageRequest.of(page,size,sort);
+        Page<Product> productPage=productRepo.findAll(pageable);
+        return PageResponse.<ProductDto> builder()
+                .content(productPage.getContent().stream().map(this::mapToDto).toList())
+                .page(productPage.getNumber())
+                .size(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .last(productPage.isLast())
+                .build();
     }
 
     // Get Product By ID
