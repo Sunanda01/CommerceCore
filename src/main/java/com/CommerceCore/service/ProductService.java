@@ -32,6 +32,7 @@ public class ProductService {
     }
 
     // Get All Product
+    // http://localhost:8080/api/products?page=1&size=3&sortBy=price&direction=asc
     public PageResponse<ProductDto> getAllProduct(int page, int size, String sortBy, String direction){
         Sort sort=direction.equalsIgnoreCase("asc")?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
         Pageable pageable= PageRequest.of(page,size,sort);
