@@ -47,6 +47,33 @@ public class ProductService {
                 .build();
     }
 
+    // Get Filtered Product + Pagination
+    // 1. http://localhost:8080/api/products/filter?category=Mobile&sortBy=price&direction=asc
+    // 2. http://localhost:8080/api/products/filter?name=Vivo&category=Mobile&sortBy=price&direction=asc
+    public PageResponse<ProductDto> getFilterProduct(
+            int page,
+            int size,
+            String sortBy,
+            String direction,
+
+            String keyword,
+            String category,
+            Double minPrice,
+            Double maxPrice
+    ){
+        Sort.Direction dir=Sort.Direction.fromString(direction);
+        Pageable pageable= PageRequest.of(page, size, Sort.by(dir,sortBy));
+        Page<Product> productPage=productRepo.filterProducts(keyword, category, minPrice, maxPrice, pageable);
+        return PageResponse.<ProductDto> builder()
+                .content(productPage.getContent().stream().map(this::mapToDto).toList())
+                .page(productPage.getNumber())
+                .size(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .last(productPage.isLast())
+                .build();
+    }
+
     // Get Product By ID
     public ProductDto getProductById(Long productId){
         Product product=productRepo.findById(productId)

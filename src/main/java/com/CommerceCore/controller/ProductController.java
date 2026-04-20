@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -35,6 +36,22 @@ public class ProductController {
             @RequestParam(defaultValue = "asc") String direction
     ){
         return productService.getAllProduct(page, size, sortBy, direction);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/filter")
+    public PageResponse<ProductDto> getFilterProduct(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
+
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ){
+        return productService.getFilterProduct(page, size, sortBy, direction, keyword, category, minPrice, maxPrice);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")

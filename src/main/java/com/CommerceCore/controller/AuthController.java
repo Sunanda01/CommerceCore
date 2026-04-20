@@ -60,9 +60,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
-        for (Cookie cookie : request.getCookies()) {
-            System.out.println(cookie.getName() + " = " + cookie.getValue());
-        }
         String token=extractRefreshToken(request);
         service.logout(token);
         clearCookie(response);
