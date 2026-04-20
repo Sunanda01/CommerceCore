@@ -22,3 +22,4 @@ volumes:
   mysql_data:
 
 # Run docker-compose => docker-compose up -d
+# docker exec -it ecommerce-redis redis-cli

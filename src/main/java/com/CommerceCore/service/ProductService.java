@@ -11,6 +11,8 @@ import com.CommerceCore.repository.ProductRepo;
 import com.CommerceCore.repository.ProductRepoSpecification;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ public class ProductService {
     private final ProductRepoSpecification repoSpecification;
 
     // Create Product
+    @CacheEvict(value = {"products", "productFilter", "productSpecification"}, allEntries = true)
     public ProductDto createProduct(ProductDto dto){
         Category category=categoryRepo.findById(dto.getCategoryId()).orElseThrow(()->new ApiException("Category Not Found", HttpStatus.NOT_FOUND));
         Product product=mapToEntity(dto,category);
@@ -37,8 +40,12 @@ public class ProductService {
 
     // Get All Product
     // http://localhost:8080/api/products?page=1&size=3&sortBy=price&direction=asc
+    @Cacheable(value = "products", key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction")
     public PageResponse<ProductDto> getAllProduct(int page, int size, String sortBy, String direction){
-        Sort sort=direction.equalsIgnoreCase("asc")?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+        System.out.println("DB HIT");
+        Sort sort=direction.equalsIgnoreCase("asc")
+                ?Sort.by(sortBy).ascending()
+                :Sort.by(sortBy).descending();
         Pageable pageable= PageRequest.of(page,size,sort);
         Page<Product> productPage=productRepo.findAll(pageable);
         return PageResponse.<ProductDto> builder()
@@ -54,6 +61,7 @@ public class ProductService {
     // Get Filtered Product + Pagination
     // 1. http://localhost:8080/api/products/filter?category=Mobile&sortBy=price&direction=asc
     // 2. http://localhost:8080/api/products/filter?name=Vivo&category=Mobile&sortBy=price&direction=asc
+    @Cacheable(value = "productFilter", key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction + '-' + #keyword + '-' + #category + '-' + #minPrice + '-' + #maxPrice ")
     public PageResponse<ProductDto> getFilterProduct(
             int page,
             int size,
@@ -65,6 +73,7 @@ public class ProductService {
             Double minPrice,
             Double maxPrice
     ){
+        System.out.println("DB HIT FILTER");
         Sort.Direction dir=Sort.Direction.fromString(direction);
         Pageable pageable= PageRequest.of(page, size, Sort.by(dir,sortBy));
         Page<Product> productPage=productRepo.filterProducts(keyword, category, minPrice, maxPrice, pageable);
@@ -80,6 +89,7 @@ public class ProductService {
 
     // Get Filtered Product Using Specification + Pagination
     // http://localhost:8080/api/products/specification?category=Mobile&sortBy=price&direction=desc
+    @Cacheable(value = "productSpecification", key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction + '-' + #keyword + '-' + #category + '-' + #minPrice + '-' + #maxPrice ")
     public PageResponse<ProductDto> getFilterProductSpecification(
             int page,
             int size,
@@ -91,6 +101,7 @@ public class ProductService {
             Double minPrice,
             Double maxPrice
     ){
+        System.out.println("DB HIT FILTER SPECIFICATION");
         Sort.Direction dir=Sort.Direction.fromString(direction);
         Pageable pageable= PageRequest.of(page, size, Sort.by(dir,sortBy));
         Specification<Product> spec = ProductSpecification.filterProduct(
