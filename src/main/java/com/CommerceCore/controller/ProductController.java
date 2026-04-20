@@ -55,6 +55,22 @@ public class ProductController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/specification")
+    public PageResponse<ProductDto> getFilterProductSpecification(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
+
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ){
+        return productService.getFilterProductSpecification(page, size, sortBy, direction, keyword, category, minPrice, maxPrice);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{id}")
     public ProductDto geProductById(@PathVariable Long id){
         return productService.getProductById(id);

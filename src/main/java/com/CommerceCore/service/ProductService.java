@@ -4,15 +4,18 @@ import com.CommerceCore.dto.ProductDto;
 import com.CommerceCore.entity.Category;
 import com.CommerceCore.entity.PageResponse;
 import com.CommerceCore.entity.Product;
+import com.CommerceCore.entity.ProductSpecification;
 import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.CategoryRepo;
 import com.CommerceCore.repository.ProductRepo;
+import com.CommerceCore.repository.ProductRepoSpecification;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 public class ProductService {
     private final ProductRepo productRepo;
     private final CategoryRepo categoryRepo;
+    private final ProductRepoSpecification repoSpecification;
 
     // Create Product
     public ProductDto createProduct(ProductDto dto){
@@ -64,6 +68,35 @@ public class ProductService {
         Sort.Direction dir=Sort.Direction.fromString(direction);
         Pageable pageable= PageRequest.of(page, size, Sort.by(dir,sortBy));
         Page<Product> productPage=productRepo.filterProducts(keyword, category, minPrice, maxPrice, pageable);
+        return PageResponse.<ProductDto> builder()
+                .content(productPage.getContent().stream().map(this::mapToDto).toList())
+                .page(productPage.getNumber())
+                .size(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .last(productPage.isLast())
+                .build();
+    }
+
+    // Get Filtered Product Using Specification + Pagination
+    // http://localhost:8080/api/products/specification?category=Mobile&sortBy=price&direction=desc
+    public PageResponse<ProductDto> getFilterProductSpecification(
+            int page,
+            int size,
+            String sortBy,
+            String direction,
+
+            String keyword,
+            String category,
+            Double minPrice,
+            Double maxPrice
+    ){
+        Sort.Direction dir=Sort.Direction.fromString(direction);
+        Pageable pageable= PageRequest.of(page, size, Sort.by(dir,sortBy));
+        Specification<Product> spec = ProductSpecification.filterProduct(
+                keyword, category, minPrice, maxPrice
+        );
+        Page<Product> productPage=repoSpecification.findAll(spec, pageable);
         return PageResponse.<ProductDto> builder()
                 .content(productPage.getContent().stream().map(this::mapToDto).toList())
                 .page(productPage.getNumber())
