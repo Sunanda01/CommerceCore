@@ -35,9 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserRepo repo;
     private final TokenBlacklistService tokenBlacklistService;
-
-    @Autowired
-    private Helper helper;
+    private final Helper helper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

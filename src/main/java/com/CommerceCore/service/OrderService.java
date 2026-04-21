@@ -7,6 +7,7 @@ import com.CommerceCore.entity.*;
 import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +24,10 @@ public class OrderService {
     private final CartItemRepo cartItemRepo;
     private final OrderItemRepo orderItemRepo;
     private final OrderItemService itemService;
+    private final ProductRepo productRepo;
 
     // Place order
+    @CacheEvict(value = {"products", "productFilter", "productSpecification"}, allEntries = true)
     @Transactional
     public OrderDto placeOrder(long userId){
         User user=userRepo.findById(userId).orElseThrow(()->new ApiException("User Not Found", HttpStatus.NOT_FOUND));
@@ -46,11 +49,20 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         // 3. Convert Cart → OrderItems
         for (CartItem cartItem:cartItems){
-            double price=cartItem.getProduct().getPrice();
+            Product product=cartItem.getProduct();
             int quantity=cartItem.getQuantity();
+
+            if(product.getStock()<quantity){
+                throw new ApiException("Product "+product.getName()+" has only "+product.getStock()+" stock left",HttpStatus.BAD_REQUEST);
+            }
+
+            product.setStock(product.getStock()-quantity);
+            productRepo.save(product);
+
+            double price=product.getPrice();
             OrderItem orderItem=OrderItem.builder()
                     .order(savedOrder)
-                    .product(cartItem.getProduct())
+                    .product(product)
                     .quantity(quantity)
                     .price(price)
                     .build();
