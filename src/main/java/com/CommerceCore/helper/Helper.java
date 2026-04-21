@@ -3,7 +3,7 @@ package com.CommerceCore.helper;
 import com.CommerceCore.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
