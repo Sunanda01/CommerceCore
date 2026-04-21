@@ -4,9 +4,11 @@ import com.CommerceCore.entity.CustomUserPrincipal;
 import com.CommerceCore.entity.User;
 
 import com.CommerceCore.exception.ErrorResponse;
+import com.CommerceCore.helper.Helper;
 import com.CommerceCore.repository.UserRepo;
 
 
+import com.CommerceCore.service.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,8 +34,10 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserRepo repo;
+    private final TokenBlacklistService tokenBlacklistService;
+
     @Autowired
-    private ObjectMapper mapper;
+    private Helper helper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -41,17 +45,32 @@ public class JwtFilter extends OncePerRequestFilter {
             final String authHeader= request.getHeader("Authorization");
             String jwt=null;
             Long userId=null;
-            String role=null;
+//            String role=null;
 
             // Extract Token
             if(authHeader!=null && authHeader.startsWith("Bearer ")){
                 jwt=authHeader.substring(7);
-                userId=jwtUtil.extractUserId(jwt);
-//            role=jwtUtil.extractRole(jwt);
+            }
+
+            if(jwt==null){
+                filterChain.doFilter(request,response);
+                return;
+            }
+
+            if(tokenBlacklistService.isTokenBlacklisted(jwt)){
+                helper.sendError(response,"Token is Blacklisted");
+                return;
+            }
+
+            userId=jwtUtil.extractUserId(jwt);
+
+            if(!jwtUtil.isTokenValid(jwt,userId)){
+                helper.sendError(response,"Token is Invalid");
+                return;
             }
 
             // validate & Set Authentication
-            if(userId!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+            if(SecurityContextHolder.getContext().getAuthentication()==null){
                 User user=repo.findById(userId).orElseThrow(()->new RuntimeException("User Not Found"));
                 List<SimpleGrantedAuthority> authorities = List.of(
                         new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
@@ -61,28 +80,17 @@ public class JwtFilter extends OncePerRequestFilter {
                         user.getEmail(),
                         authorities
                 );
-                if(jwtUtil.isTokenValid(jwt, user.getId())){
-                    UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(
-                            principal,
-                            null,
-                            principal.getAuthorities()
-                    );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
+                UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(
+                        principal,
+                        null,
+                        principal.getAuthorities()
+                );
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
             filterChain.doFilter(request,response);
         } catch (Exception e) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
-
-            ErrorResponse error = ErrorResponse.builder()
-                    .message("Invalid or expired token")
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .timeStamp(LocalDateTime.now())
-                    .build();
-
-            mapper.writeValue(response.getWriter(), error);
+            helper.sendError(response,"Invalid or Expired Token");
         }
 
     }

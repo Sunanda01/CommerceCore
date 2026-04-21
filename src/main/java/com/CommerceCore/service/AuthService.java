@@ -20,6 +20,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepo tokenRepo;
+    private final TokenBlacklistService tokenBlacklistService;
 
     public AuthResponse login(String email, String password){
         User user=repo.findByEmail(email)
@@ -61,7 +62,10 @@ public class AuthService {
                 .build();
     }
 
-    public void logout(String refreshToken){
+    public void logout(String accessToken,String refreshToken){
+        long expiry=jwtUtil.getExpirationMillis(accessToken);
+        tokenBlacklistService.blacklistToken(accessToken,expiry);
+
         RefreshToken token = tokenRepo.findByToken(refreshToken)
                 .orElseThrow(() -> new ApiException("Invalid token", HttpStatus.UNAUTHORIZED));
         // even if already revoked → no problem

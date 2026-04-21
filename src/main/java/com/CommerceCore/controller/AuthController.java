@@ -60,8 +60,13 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
-        String token=extractRefreshToken(request);
-        service.logout(token);
+        String header=request.getHeader("Authorization");
+        if(header==null || !header.startsWith("Bearer ")){
+            throw new ApiException("Access Token Missing",HttpStatus.FORBIDDEN);
+        }
+        String accessToken=header.substring(7);
+        String refreshToken=extractRefreshToken(request);
+        service.logout(accessToken,refreshToken);
         clearCookie(response);
         return ResponseEntity.ok("Logged Out Successfully");
     }
