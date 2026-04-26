@@ -3,8 +3,7 @@ package com.CommerceCore.security;
 import com.CommerceCore.entity.CustomUserPrincipal;
 import com.CommerceCore.entity.User;
 
-import com.CommerceCore.exception.ErrorResponse;
-import com.CommerceCore.helper.Helper;
+import com.CommerceCore.Component.Helper;
 import com.CommerceCore.repository.UserRepo;
 
 
@@ -14,8 +13,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -23,10 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component

@@ -3,6 +3,7 @@ package com.CommerceCore.service;
 import com.CommerceCore.dto.UserDto;
 import com.CommerceCore.dto.UserRequestDto;
 import com.CommerceCore.dto.UserResponseDto;
+import com.CommerceCore.entity.AuthProvider;
 import com.CommerceCore.entity.Role;
 import com.CommerceCore.entity.User;
 import com.CommerceCore.exception.ApiException;
@@ -22,11 +23,16 @@ public class UserService {
 
     // Create User
     public UserResponseDto createUser(UserRequestDto dto){
-        if(userRepo.findByEmail(dto.getEmail()).isPresent()){
+        User existing=userRepo.findByEmail(dto.getEmail()).orElse(null);
+        if(existing!=null){
+            if(existing.getProvider()== AuthProvider.GOOGLE){
+                throw new ApiException("Use Google Login", HttpStatus.BAD_REQUEST);
+            }
             throw new ApiException("User Already exists", HttpStatus.CONFLICT);
         }
         User user=mapToEntity(dto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setProvider(AuthProvider.LOCAL);
         return mapToDto(userRepo.save(user));
     }
 
@@ -55,7 +61,6 @@ public class UserService {
     // DTO => Entity
     public User mapToEntity(UserRequestDto dto){
         return User.builder()
-                .id(dto.getId())
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(dto.getPassword())

@@ -1,4 +1,4 @@
-package com.CommerceCore.helper;
+package com.CommerceCore.Component;
 
 import com.CommerceCore.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;

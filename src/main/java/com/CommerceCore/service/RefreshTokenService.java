@@ -6,6 +6,7 @@ import com.CommerceCore.entity.User;
 import com.CommerceCore.repository.RefreshTokenRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class RefreshTokenService {
         token.setRevoked(true);
         tokenRepo.save(token);
     }
-
+    @Transactional
     // Delete all tokens for logout
     public void deleteByUser(User user){
         tokenRepo.deleteByUser(user);

@@ -1,5 +1,6 @@
 package com.CommerceCore.service;
 
+import com.CommerceCore.entity.AuthProvider;
 import com.CommerceCore.entity.AuthResponse;
 import com.CommerceCore.entity.RefreshToken;
 import com.CommerceCore.entity.User;
@@ -25,6 +26,9 @@ public class AuthService {
     public AuthResponse login(String email, String password){
         User user=repo.findByEmail(email)
                 .orElseThrow(()->new ApiException("User Not Found", HttpStatus.NOT_FOUND));
+        if(user.getProvider() == AuthProvider.GOOGLE){
+            throw new ApiException("Use Google Login", HttpStatus.BAD_REQUEST);
+        }
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new ApiException("Invalid Credentials",HttpStatus.FORBIDDEN);
         }
@@ -65,11 +69,12 @@ public class AuthService {
     public void logout(String accessToken,String refreshToken){
         long expiry=jwtUtil.getExpirationMillis(accessToken);
         tokenBlacklistService.blacklistToken(accessToken,expiry);
-
-        RefreshToken token = tokenRepo.findByToken(refreshToken)
-                .orElseThrow(() -> new ApiException("Invalid token", HttpStatus.UNAUTHORIZED));
-        // even if already revoked → no problem
-        token.setRevoked(true);
-        tokenRepo.save(token);
+        if(refreshToken!=null) {
+            RefreshToken token = tokenRepo.findByToken(refreshToken)
+                    .orElseThrow(() -> new ApiException("Invalid token", HttpStatus.UNAUTHORIZED));
+            // even if already revoked → no problem
+            token.setRevoked(true);
+            tokenRepo.save(token);
+        }
     }
 }

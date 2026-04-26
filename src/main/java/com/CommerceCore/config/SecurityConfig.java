@@ -1,5 +1,6 @@
 package com.CommerceCore.config;
 
+import com.CommerceCore.Component.CustomOAuth2SuccessHandler;
 import com.CommerceCore.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
+    private final CustomOAuth2SuccessHandler successHandler;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
@@ -22,6 +24,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth->auth
                 // Auth APIs
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/oAuth2").permitAll()
 
                 // Admin APIs
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -43,6 +46,7 @@ public class SecurityConfig {
 
                 // Fallback Apis
                 .anyRequest().authenticated())
+                .oauth2Login(oAuth -> oAuth.successHandler(successHandler))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

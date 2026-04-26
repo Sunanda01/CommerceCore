@@ -71,6 +71,7 @@ public class OrderService {
         }
         orderItemRepo.saveAll(orderItems);
         savedOrder.setTotalAmount(totAmount);
+        savedOrder.setStatus(OrderStatus.CONFIRMED);
         orderRepo.save(savedOrder);         // Update Total in Order
         cartItemRepo.deleteAll(cartItems);  // After order cart gets empty
         return mapToDto(savedOrder);
