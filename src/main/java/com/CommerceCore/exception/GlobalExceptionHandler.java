@@ -59,4 +59,24 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDenied(Exception ex) {
+        return ResponseEntity.status(403).body(
+                Map.of(
+                        "message", "Access Denied",
+                        "status", HttpStatus.FORBIDDEN
+                )
+        );
+    }
+
+    @ExceptionHandler(org.springframework.security.authentication.AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<?> handleAuth(Exception ex) {
+        return ResponseEntity.status(401).body(
+                Map.of(
+                        "message", "Unauthorized",
+                        "status", HttpStatus.UNAUTHORIZED
+                )
+        );
+    }
 }

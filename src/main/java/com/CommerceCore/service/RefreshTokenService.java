@@ -1,6 +1,5 @@
 package com.CommerceCore.service;
 
-import com.CommerceCore.entity.AuthResponse;
 import com.CommerceCore.entity.RefreshToken;
 import com.CommerceCore.entity.User;
 import com.CommerceCore.repository.RefreshTokenRepo;
