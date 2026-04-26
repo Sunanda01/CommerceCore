@@ -82,4 +82,23 @@ public class AuthService {
         long expiry = jwtUtil.getExpirationMillis(accessToken);
         tokenBlacklistService.blacklistToken(accessToken, expiry);
     }
+
+    public void logoutAll(String accessToken,String refreshToken){
+        Long userIdFromAccess = jwtUtil.extractUserId(accessToken);
+        if(refreshToken!=null) {
+            RefreshToken token = tokenRepo.findByToken(refreshToken)
+                    .orElseThrow(() -> new ApiException("Invalid token", HttpStatus.UNAUTHORIZED));
+            Long userIdFromRefresh = token.getUser().getId();
+            if (!userIdFromAccess.equals(userIdFromRefresh)) {
+                throw new ApiException("Token Mismatch", HttpStatus.UNAUTHORIZED);
+            }
+            User user=repo.findById(userIdFromAccess).orElseThrow(()->new ApiException("User Not Found",HttpStatus.NOT_FOUND));
+            token.setRevoked(true);
+            tokenRepo.save(token);
+            refreshTokenService.deleteByUser(user);
+        }
+        // even if already revoked → no problem
+        long expiry = jwtUtil.getExpirationMillis(accessToken);
+        tokenBlacklistService.blacklistToken(accessToken, expiry);
+    }
 }

@@ -69,4 +69,17 @@ public class AuthController {
         cookieUtil.clearCookie(response);
         return ResponseEntity.ok("Logged Out Successfully");
     }
+
+    @PostMapping("/logout-all")
+    public ResponseEntity<String> logoutAll(HttpServletRequest request, HttpServletResponse response){
+        String header=request.getHeader("Authorization");
+        if(header==null || !header.startsWith("Bearer ")){
+            throw new ApiException("Access Token Missing",HttpStatus.FORBIDDEN);
+        }
+        String accessToken=header.substring(7);
+        String refreshToken=cookieUtil.extractRefreshToken(request);
+        service.logoutAll(accessToken,refreshToken);
+        cookieUtil.clearCookie(response);
+        return ResponseEntity.ok("Logged Out Successfully From All Devices");
+    }
 }
