@@ -1,5 +1,6 @@
-package com.CommerceCore.entity;
+package com.CommerceCore.specification;
 
+import com.CommerceCore.entity.Product;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 

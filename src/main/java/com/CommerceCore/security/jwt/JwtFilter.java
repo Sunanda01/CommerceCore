@@ -1,9 +1,9 @@
-package com.CommerceCore.security;
+package com.CommerceCore.security.jwt;
 
-import com.CommerceCore.entity.CustomUserPrincipal;
+import com.CommerceCore.security.CustomUserPrincipal;
 import com.CommerceCore.entity.User;
 
-import com.CommerceCore.Component.Helper;
+import com.CommerceCore.util.Helper;
 import com.CommerceCore.repository.UserRepo;
 
 

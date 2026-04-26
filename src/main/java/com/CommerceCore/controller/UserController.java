@@ -1,7 +1,7 @@
 package com.CommerceCore.controller;
 
 import com.CommerceCore.dto.UserResponseDto;
-import com.CommerceCore.entity.CustomUserPrincipal;
+import com.CommerceCore.security.CustomUserPrincipal;
 import com.CommerceCore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

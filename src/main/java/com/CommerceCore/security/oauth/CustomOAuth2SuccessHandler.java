@@ -1,13 +1,13 @@
-    package com.CommerceCore.Component;
+    package com.CommerceCore.security.oauth;
 
-    import com.CommerceCore.controller.AuthController;
+    import com.CommerceCore.util.CookieUtil;
     import com.CommerceCore.entity.AuthProvider;
     import com.CommerceCore.entity.RefreshToken;
     import com.CommerceCore.entity.Role;
     import com.CommerceCore.entity.User;
     import com.CommerceCore.exception.ApiException;
     import com.CommerceCore.repository.UserRepo;
-    import com.CommerceCore.security.JwtUtil;
+    import com.CommerceCore.security.jwt.JwtUtil;
     import com.CommerceCore.service.RefreshTokenService;
     import jakarta.servlet.http.HttpServletRequest;
     import jakarta.servlet.http.HttpServletResponse;

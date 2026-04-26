@@ -1,4 +1,4 @@
-package com.CommerceCore.security;
+package com.CommerceCore.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

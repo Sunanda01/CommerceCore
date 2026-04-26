@@ -1,7 +1,7 @@
 package com.CommerceCore.controller;
 
 import com.CommerceCore.dto.CartItemDto;
-import com.CommerceCore.entity.CustomUserPrincipal;
+import com.CommerceCore.security.CustomUserPrincipal;
 import com.CommerceCore.service.CartItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

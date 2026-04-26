@@ -1,17 +1,14 @@
 package com.CommerceCore.controller;
 
 import com.CommerceCore.dto.ProductDto;
-import com.CommerceCore.entity.PageResponse;
+import com.CommerceCore.dto.PageResponse;
 import com.CommerceCore.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController

@@ -1,7 +1,7 @@
 package com.CommerceCore.config;
 
-import com.CommerceCore.Component.CustomOAuth2SuccessHandler;
-import com.CommerceCore.security.JwtFilter;
+import com.CommerceCore.security.oauth.CustomOAuth2SuccessHandler;
+import com.CommerceCore.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

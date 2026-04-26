@@ -1,13 +1,13 @@
 package com.CommerceCore.service;
 
 import com.CommerceCore.entity.AuthProvider;
-import com.CommerceCore.entity.AuthResponse;
+import com.CommerceCore.dto.AuthResponse;
 import com.CommerceCore.entity.RefreshToken;
 import com.CommerceCore.entity.User;
 import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.RefreshTokenRepo;
 import com.CommerceCore.repository.UserRepo;
-import com.CommerceCore.security.JwtUtil;
+import com.CommerceCore.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,14 +67,19 @@ public class AuthService {
     }
 
     public void logout(String accessToken,String refreshToken){
-        long expiry=jwtUtil.getExpirationMillis(accessToken);
-        tokenBlacklistService.blacklistToken(accessToken,expiry);
+        Long userIdFromAccess= jwtUtil.extractUserId(accessToken);
         if(refreshToken!=null) {
             RefreshToken token = tokenRepo.findByToken(refreshToken)
                     .orElseThrow(() -> new ApiException("Invalid token", HttpStatus.UNAUTHORIZED));
-            // even if already revoked → no problem
+            Long userIdFromRefresh = token.getUser().getId();
+            if (!userIdFromAccess.equals(userIdFromRefresh)) {
+                throw new ApiException("Token Mismatch", HttpStatus.UNAUTHORIZED);
+            }
             token.setRevoked(true);
             tokenRepo.save(token);
         }
+        // even if already revoked → no problem
+        long expiry = jwtUtil.getExpirationMillis(accessToken);
+        tokenBlacklistService.blacklistToken(accessToken, expiry);
     }
 }

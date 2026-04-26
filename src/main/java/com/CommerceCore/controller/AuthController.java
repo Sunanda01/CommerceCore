@@ -1,22 +1,19 @@
 package com.CommerceCore.controller;
 
-import com.CommerceCore.Component.CookieUtil;
+import com.CommerceCore.util.CookieUtil;
 import com.CommerceCore.dto.LoginRequestDto;
 import com.CommerceCore.dto.UserRequestDto;
 import com.CommerceCore.dto.UserResponseDto;
-import com.CommerceCore.entity.AuthResponse;
+import com.CommerceCore.dto.AuthResponse;
 import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.service.AuthService;
 import com.CommerceCore.service.UserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,10 +64,7 @@ public class AuthController {
             throw new ApiException("Access Token Missing",HttpStatus.FORBIDDEN);
         }
         String accessToken=header.substring(7);
-        String refreshToken=null;
-        try{
-            refreshToken=cookieUtil.extractRefreshToken(request);
-        } catch (Exception ignored) {}
+        String refreshToken=cookieUtil.extractRefreshToken(request);
         service.logout(accessToken,refreshToken);
         cookieUtil.clearCookie(response);
         return ResponseEntity.ok("Logged Out Successfully");

@@ -1,4 +1,4 @@
-package com.CommerceCore.entity;
+package com.CommerceCore.dto;
 
 import lombok.Builder;
 import lombok.Data;

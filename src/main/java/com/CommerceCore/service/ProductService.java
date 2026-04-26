@@ -2,13 +2,14 @@ package com.CommerceCore.service;
 
 import com.CommerceCore.dto.ProductDto;
 import com.CommerceCore.entity.Category;
-import com.CommerceCore.entity.PageResponse;
+import com.CommerceCore.dto.PageResponse;
 import com.CommerceCore.entity.Product;
-import com.CommerceCore.entity.ProductSpecification;
+
 import com.CommerceCore.exception.ApiException;
 import com.CommerceCore.repository.CategoryRepo;
 import com.CommerceCore.repository.ProductRepo;
 import com.CommerceCore.repository.ProductRepoSpecification;
+import com.CommerceCore.specification.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.cache.annotation.CacheEvict;

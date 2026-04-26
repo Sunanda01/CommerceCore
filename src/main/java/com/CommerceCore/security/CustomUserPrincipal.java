@@ -1,4 +1,4 @@
-package com.CommerceCore.entity;
+package com.CommerceCore.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+
 @Getter
 @AllArgsConstructor
 public class CustomUserPrincipal implements UserDetails {

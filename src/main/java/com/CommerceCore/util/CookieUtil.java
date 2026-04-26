@@ -1,4 +1,4 @@
-package com.CommerceCore.Component;
+package com.CommerceCore.util;
 
 import com.CommerceCore.exception.ApiException;
 import jakarta.servlet.http.Cookie;
