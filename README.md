@@ -141,13 +141,22 @@ cd commerce-core
 
 ### 2. Configure application.yaml
 ```bash
-spring.datasource.url=jdbc:mysql://localhost:3306/commerce
-spring.datasource.username=root
-spring.datasource.password=your_password
-spring.jpa.hibernate.ddl-auto=update
+spring:
+  jdbc: mysql://localhost:3306/commerce
+  datasource:
+    username: root
+    password: your_password
+  jpa:
+    hibernate:
+      ddl-auto: update
 
-spring.security.oauth2.client.registration.google.client-id=GOOGLE CLIENT ID
-spring.security.oauth2.client.registration.google.client-secret=GOOGLE CLIENT SECRET
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: GOOGLE CLIENT ID
+            client-secret: GOOGLE CLIENT SECRET
 ```
 
 ### 3. Run docker compose
