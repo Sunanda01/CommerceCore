@@ -91,6 +91,8 @@ com.CommerceCore
 #### Params 
 | Param  | Description |
 |--------|------------|
+| page | Page number |
+| size | No of content in single page |
 | keyword | Product name|
 | category | Category |
 | minPrice | Minimum Price |
@@ -101,7 +103,7 @@ com.CommerceCore
 | Method | Endpoint | Description |
 |--------|---------|------------|
 | POST | /api/products | Create product (ADMIN) |
-| GET | /api/products?page=page_no&size=number&sortBy=field&direction=asc | Get all products |
+| GET | /api/products?page=1&size=3&sortBy=field&direction=asc | Get all products |
 | GET | /api/products/{productId} | Get product by product id |
 | GET | /api/products/filter?name=Samsung 300W Charger&category=C Type Charger&sortBy=price&direction=asc | Get filtered product (static query) |
 | GET | /api/products/specification?category=Mobile&sortBy=price&direction=desc | Get filtered product (dynamic query) |
