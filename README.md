@@ -163,7 +163,6 @@ docker-compose up -d
 ## 🔮 Future Improvements
 
 - Refresh token reuse detection
-- Logout from all devices
 - Rate limiting
 - Email verification
 - Payment integration
