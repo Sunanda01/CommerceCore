@@ -64,6 +64,16 @@ com.CommerceCore
 
 ## 🔑 API Endpoints
 
+### Default URL = http://localhost:8080
+#### Default PORT Number for Tomcat Server is 8080
+
+### To change Port Number
+```bash
+// application.yml
+server:
+  port: PORT_NUMBER
+```
+
 ### Auth
 
 | Method | Endpoint | Description |
