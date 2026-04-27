@@ -111,9 +111,15 @@ com.CommerceCore
 
 ### Carts
 
+#### Params
+| Param  | Description |
+|--------|------------|
+| productId | Product id |
+| quantity | No of items |
+
 | Method | Endpoint | Description |
 |--------|---------|------------|
-| POST | /api/carts/add?productId=id&quantity=number | Add to cart |
+| POST | /api/carts/add?productId=3&quantity=2 | Add to cart |
 | GET | /api/carts | Get cart by user id |
 
 ### Orders
