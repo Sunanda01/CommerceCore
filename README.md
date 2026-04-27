@@ -29,7 +29,7 @@ This project demonstrates a monolithic backend architecture with modern security
 - Role-based authorization
 
 ### 3. Product & Category
-- Product CRUD operations
+- Product create and read operations
 - Category management
 - Filtering & specifications
 
