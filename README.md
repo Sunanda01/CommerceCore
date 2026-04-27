@@ -13,6 +13,7 @@ This project demonstrates a monolithic backend architecture with modern security
 - MySQL
 - Redis (Token Blacklisting & Caching)
 - Lombok
+- Docker
 
 ## 🔐 Features
 
@@ -149,7 +150,12 @@ spring.security.oauth2.client.registration.google.client-id=GOOGLE CLIENT ID
 spring.security.oauth2.client.registration.google.client-secret=GOOGLE CLIENT SECRET
 ```
 
-### 3. Run application
+### 3. Run docker compose
+```bash
+docker-compose up -d
+```
+
+### 4. Run application
 ```bash
 ./mvnw spring-boot:run
 ```
